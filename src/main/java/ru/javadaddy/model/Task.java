@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.javadaddy.enums.Status;
 
 import java.time.LocalDate;
-import java.util.Locale;
 
 @Getter
 @Setter
@@ -16,7 +16,8 @@ import java.util.Locale;
 @ToString
 public class Task {
     private Long id;
-    private String name;
+    private String nameTask;
     private String description;
-    private LocalDate dueDate;
+    private LocalDate periodOfExecution;
+    private Status status;
 }
