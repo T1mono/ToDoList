@@ -22,7 +22,7 @@ public class TaskRepositoryImpl {
         }
 
         if (task.getPeriodOfExecution() != null && task.getPeriodOfExecution().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Срок выполнения задачи не может быть в прошлом")
+            throw new IllegalArgumentException("Срок выполнения задачи не может быть в прошлом");
         }
 
         tasksRepository.add(task);
