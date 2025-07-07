@@ -7,7 +7,10 @@ import ru.javadaddy.model.Task;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class TaskRepositoryImpl {
@@ -57,7 +60,7 @@ public class TaskRepositoryImpl {
 
         List<Task> result = new ArrayList<>();
 
-        if (status == null){
+        if (status == null) {
             throw new IllegalArgumentException("Статус не может быть null");
         }
 
@@ -67,5 +70,27 @@ public class TaskRepositoryImpl {
             }
         }
         return result;
+    }
+
+    public List<Task> sortByStatus() {
+
+        if (tasksRepository == null || tasksRepository.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return tasksRepository.stream()
+                .sorted(Comparator.comparing(i -> i.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> sortByPeriodOfExecution() {
+
+        if (tasksRepository == null || tasksRepository.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return tasksRepository.stream()
+                .sorted(Comparator.comparing(i -> i.getPeriodOfExecution()))
+                .collect(Collectors.toList());
     }
 }
