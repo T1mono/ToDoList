@@ -5,8 +5,11 @@ import ru.javadaddy.model.Task;
 import ru.javadaddy.service.TaskService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class TaskController {
 
@@ -74,6 +77,50 @@ public class TaskController {
     //TODO: Добавить задачу в TODO List
     private void addTask() {
 
+        //Ввод ID задачи
+        System.out.print("Введите ID задачи: ");
+        Long id = scanner.nextLong();
+
+        //Ввод названия задачи
+        System.out.print("Ввведите название задачи");
+        String name = scanner.nextLine();
+
+        if (name.isEmpty()) {
+            System.out.println("Название задачи не может быть пусты");
+            return;
+        }
+
+        //Ввод описания задачи
+        System.out.print("Введите описание задачи");
+        String description = scanner.nextLine();
+
+
+        //Ввод даты
+        LocalDate date;
+        while (true) {
+            System.out.print("Введите дату выполнения (ГГГГ-ММ-ДД): ");
+            String dateInput = scanner.nextLine();
+            try {
+                date = LocalDate.parse(dateInput);
+                break; //Если дата корректная выходим из цикла
+            } catch (DateTimeParseException e) {
+                System.out.println("Неверный формат даты! Пример: 2025-07-07");
+            }
+        }
+
+        System.out.println("Выберите статус: ");
+        for (Status status : Status.values()) {
+            System.out.println("- " + status);
+        }
+
+        Task task = new Task(id, name, description, date, status);
+
+        try {
+            taskService.createTask(task);
+            System.out.println("Задача добавлена в список");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
     }
 
     //TODO: Удалить задачу
