@@ -16,7 +16,6 @@ public class TaskRepositoryImpl {
             throw new IllegalArgumentException("Task не может быть равен null");
         }
 
-
         if (task.getNameTask() == null || task.getNameTask().isBlank()) {
             throw new IllegalArgumentException("Имя задачи не можеть пустым");
         }
