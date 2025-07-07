@@ -52,6 +52,7 @@ public class TaskRepositoryImpl {
     }
 
     //Фильтровать задачи по статусу
+    //TODO: Передать на стрим, когда будет время и доработать проверки списка задач
     public List<Task> filterTaskByStatus(Status status) {
 
         List<Task> result = new ArrayList<>();
