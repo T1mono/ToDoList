@@ -10,15 +10,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
-public class TaskRepositoryImpl {
+public class TaskRepositoryImpl implements TaskRepository {
     List<Task> tasksRepository = new ArrayList<>();
 
-    Task task = new Task();
-
     //Создание задачи
+    @Override
     public void createTask(Task task) {
         if (task == null) {
             throw new IllegalArgumentException("Task не может быть равен null");
@@ -36,6 +34,7 @@ public class TaskRepositoryImpl {
     }
 
     //Получить список задач
+    @Override
     public List<Task> getTasks() {
         if (tasksRepository == null || tasksRepository.isEmpty()) {
             return Collections.emptyList();
@@ -45,6 +44,7 @@ public class TaskRepositoryImpl {
     }
 
     //Удалить задачу
+    @Override
     public void removeTask(Long id) {
 
         if (id == null) {
@@ -56,6 +56,7 @@ public class TaskRepositoryImpl {
 
     //Фильтровать задачи по статусу
     //TODO: Передать на стрим, когда будет время и доработать проверки списка задач
+    @Override
     public List<Task> filterTaskByStatus(Status status) {
 
         List<Task> result = new ArrayList<>();
@@ -72,6 +73,7 @@ public class TaskRepositoryImpl {
         return result;
     }
 
+    @Override
     public List<Task> sortByStatus() {
 
         if (tasksRepository == null || tasksRepository.isEmpty()) {
@@ -83,6 +85,7 @@ public class TaskRepositoryImpl {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Task> sortByPeriodOfExecution() {
 
         if (tasksRepository == null || tasksRepository.isEmpty()) {
