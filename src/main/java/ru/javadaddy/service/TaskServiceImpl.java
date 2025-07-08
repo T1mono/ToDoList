@@ -3,15 +3,15 @@ package ru.javadaddy.service;
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
 import ru.javadaddy.repository.TaskRepository;
+import ru.javadaddy.repository.TaskRepositoryImpl;
 
 import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
-    private final TaskRepository taskRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
+    private final TaskRepository taskRepository = new TaskRepositoryImpl();
+
+
 
     @Override
     public void createTask(Task task) {
