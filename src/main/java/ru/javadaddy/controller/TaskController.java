@@ -50,7 +50,9 @@ public class TaskController {
     }
 
     public void run() {
-        while (true) {
+
+        boolean running = true;
+        while (running) {
             showCommandToDoList();
             int choice = readIntInput();
 
@@ -60,6 +62,11 @@ public class TaskController {
                 case 3 -> deleteTask();
                 case 4 -> filterTaskByStatus();
                 case 5 -> sortByStatus();
+                case 0 -> {
+                    System.out.println("Выход из системы...");
+                    running = false;
+                }
+                default -> System.out.println("Неверная команда, попробуйте снова!");
             }
         }
     }
