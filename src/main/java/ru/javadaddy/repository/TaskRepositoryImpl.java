@@ -1,5 +1,6 @@
 package ru.javadaddy.repository;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TaskRepositoryImpl implements TaskRepository {
@@ -94,5 +96,44 @@ public class TaskRepositoryImpl implements TaskRepository {
         return tasksRepository.stream()
                 .sorted(Comparator.comparing(i -> i.getPeriodOfExecution()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Task updateTask(
+            Long id,
+            String newName,
+            String newDescription,
+            LocalDate newDate,
+            Status newStatus
+    ) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("ID не может быть null");
+        }
+
+        if (newName == null || newDescription.isEmpty()) {
+            throw new IllegalArgumentException("Имя задачин может быть пустым");
+        }
+
+        if (newDescription.isBlank()) {
+            throw new IllegalArgumentException("Описание не может быть пустым");
+        }
+
+        if (newDate == null || newDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Срок задачи не может быть пустым или в прошлом");
+        }
+
+        //Ищем задачу
+        Task task = tasksRepository.stream()
+                .filter(i -> i.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Задача с ID " + id + "не найдена"));
+
+        task.setNameTask(newName);
+        task.setDescription(newDescription);
+        task.setPeriodOfExecution(newDate);
+        task.setStatus(newStatus);
+
+        return task;
     }
 }

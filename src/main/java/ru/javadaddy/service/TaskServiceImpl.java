@@ -5,6 +5,7 @@ import ru.javadaddy.model.Task;
 import ru.javadaddy.repository.TaskRepository;
 import ru.javadaddy.repository.TaskRepositoryImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
@@ -42,4 +43,12 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> findByPeriodOfExecution() {
         return taskRepository.sortByPeriodOfExecution();
     }
+
+    @Override
+    public Task updateTask(Long id) {
+
+        return null;
+    }
+
+
 }

@@ -3,6 +3,7 @@ package ru.javadaddy.service;
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TaskService {
@@ -18,4 +19,6 @@ public interface TaskService {
     List<Task> sortByStatus();
 
     List<Task> findByPeriodOfExecution();
+
+    Task updateTask(Long id);
 }
