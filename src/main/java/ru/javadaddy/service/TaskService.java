@@ -20,5 +20,5 @@ public interface TaskService {
 
     List<Task> findByPeriodOfExecution();
 
-    Task updateTask(Long id);
+    Task updateTask(Long id, String newTaskName, String newDescription, LocalDate newDate, Status newStatus);
 }

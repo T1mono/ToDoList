@@ -2,6 +2,7 @@ package ru.javadaddy.controller;
 
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
+import ru.javadaddy.repository.TaskRepository;
 import ru.javadaddy.service.TaskService;
 import ru.javadaddy.service.TaskServiceImpl;
 
@@ -18,11 +19,13 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    private TaskRepository taskRepository;
+
     private Status status;
 
     public TaskController() {
         this.scanner = new Scanner(System.in);
-        this.taskService = new TaskServiceImpl();
+        this.taskService = new TaskServiceImpl(taskRepository);
     }
 
     private List<Task> createTask() {

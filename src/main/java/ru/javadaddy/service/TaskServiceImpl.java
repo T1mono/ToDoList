@@ -10,9 +10,11 @@ import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
 
-    private final TaskRepository taskRepository = new TaskRepositoryImpl();
+    private final TaskRepository taskRepository;
 
-
+    public TaskServiceImpl(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     @Override
     public void createTask(Task task) {
@@ -45,9 +47,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(Long id) {
-
-        return null;
+    public Task updateTask(
+            Long id,
+            String newTaskName,
+            String newDescription,
+            LocalDate newDate,
+            Status newStatus
+    ) {
+        return taskRepository.updateTask(id, newTaskName, newDescription, newDate, newStatus);
     }
 
 
