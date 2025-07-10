@@ -13,6 +13,7 @@ import ru.javadaddy.repository.TaskRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,11 +60,16 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void getAllTask() {
+    void testGetAllTask() {
+        when(taskRepository.getTasks()).thenReturn(tasks);
+        List<Task> result = taskService.getAllTask();
+        assertEquals(tasks, result);
     }
 
     @Test
-    void deleteTask() {
+    void testDeleteTask() {
+        taskService.deleteTask(task.getId());
+        verify(taskRepository).removeTask(task.getId());
     }
 
     @Test
