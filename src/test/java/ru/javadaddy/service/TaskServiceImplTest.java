@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +41,8 @@ class TaskServiceImplTest {
                 Status.TODO
         );
 
-        tasks = List.of(new Task(2L,
+        tasks = List.of(
+                new Task(2L,
                         "Продолжить изучение коллекций Java",
                         "Структуру Map",
                         LocalDate.of(2025, 7, 16),
@@ -50,7 +52,8 @@ class TaskServiceImplTest {
                         "Создание веток",
                         LocalDate.of(2025, 7, 20),
                         Status.IN_PROGRESS
-                ));
+                )
+        );
     }
 
     @Test
@@ -73,18 +76,32 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void findByStatus() {
+    void testFindByStatus() {
+        when(taskRepository.filterTaskByStatus(task.getStatus())).thenReturn(tasks);
+        List<Task> result = taskService.findByStatus(task.getStatus());
+        verify(taskRepository).filterTaskByStatus(task.getStatus());
+        assertEquals(tasks, result);
     }
 
     @Test
-    void sortByStatus() {
+    void testSortByStatus() {
+        when(taskRepository.sortByStatus()).thenReturn(tasks);
+        List<Task> result = taskService.sortByStatus();
+        verify(taskRepository).sortByStatus();
+        assertEquals(tasks, result);
     }
 
     @Test
-    void findByPeriodOfExecution() {
+    void testFindByPeriodOfExecution() {
+        when(taskRepository.sortByPeriodOfExecution()).thenReturn(tasks);
+        List<Task> result = taskService.findByPeriodOfExecution();
+        verify(taskRepository).sortByPeriodOfExecution();
+        assertEquals(tasks, result);
     }
 
     @Test
     void updateTask() {
+        when(taskRepository.updateTask(task.getId(), task.getNameTask(), task.getDescription(), task.getPeriodOfExecution(), task.getStatus())).thenReturn(task);
+//        Task result = taskService.updateTask(task.g)
     }
 }
