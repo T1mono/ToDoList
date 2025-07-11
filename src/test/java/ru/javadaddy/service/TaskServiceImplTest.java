@@ -15,6 +15,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -101,7 +104,23 @@ class TaskServiceImplTest {
 
     @Test
     void updateTask() {
-        when(taskRepository.updateTask(task.getId(), task.getNameTask(), task.getDescription(), task.getPeriodOfExecution(), task.getStatus())).thenReturn(task);
-//        Task result = taskService.updateTask(task.g)
+        when(taskRepository.updateTask(anyLong(), anyString(), anyString(), any(LocalDate.class), any(Status.class)))
+                .thenReturn(task);
+
+        Task result = taskService.updateTask(
+                task.getId(),
+                task.getNameTask(),
+                task.getDescription(),
+                task.getPeriodOfExecution(),
+                task.getStatus()
+        );
+        verify(taskRepository).updateTask(
+                task.getId(),
+                task.getNameTask(),
+                task.getDescription(),
+                task.getPeriodOfExecution(),
+                task.getStatus()
+        );
+        assertEquals(task, result);
     }
 }

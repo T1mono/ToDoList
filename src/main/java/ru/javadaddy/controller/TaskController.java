@@ -3,6 +3,7 @@ package ru.javadaddy.controller;
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
 import ru.javadaddy.repository.TaskRepository;
+import ru.javadaddy.repository.TaskRepositoryImpl;
 import ru.javadaddy.service.TaskService;
 import ru.javadaddy.service.TaskServiceImpl;
 
@@ -11,6 +12,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class TaskController {
@@ -23,9 +25,10 @@ public class TaskController {
 
     private Status status;
 
-    public TaskController() {
+    // Внедряем TaskService через конструктор
+    public TaskController(TaskService taskService) {
         this.scanner = new Scanner(System.in);
-        this.taskService = new TaskServiceImpl(taskRepository);
+        this.taskService = taskService;
     }
 
     private List<Task> createTask() {
@@ -42,13 +45,15 @@ public class TaskController {
                         "Помыть машину",
                         "На автомой на Ленина 45",
                         LocalDate.of(2025, 07, 10),
-                        Status.IN_PROGRESS),
+                        Status.IN_PROGRESS
+                ),
                 new Task(
                         3L,
                         "Забрать заказ на Ozon",
                         "Ozon который возле работы",
                         LocalDate.now(),
-                        Status.DONE)
+                        Status.DONE
+                )
         );
     }
 
@@ -62,15 +67,95 @@ public class TaskController {
             switch (choice) {
                 case 1 -> addTask();
                 case 2 -> showToDoList();
-                case 3 -> deleteTask();
-                case 4 -> filterTaskByStatus();
-                case 5 -> sortByStatus();
+                case 3 -> editTask();
+                case 4 -> deleteTask();
+                case 5 -> filterTaskByStatus();
+                case 6 -> sortByStatus();
                 case 0 -> {
                     System.out.println("Выход из системы...");
                     running = false;
                 }
                 default -> System.out.println("Неверная команда, попробуйте снова!");
             }
+        }
+    }
+
+    private void editTask() {
+
+        try {
+            //Ввод ID задачи
+            System.out.print("Введите ID задачи, которой хотите изменить: ");
+            Long id = scanner.nextLong();
+
+            Optional<Task> existingTask = taskService.getAllTask().stream()
+                    .filter(i -> i.getId().equals(id))
+                    .findFirst();
+
+            if (existingTask.isEmpty()) {
+                System.out.println("Задача с ID " + id + "не найдена!");
+                return;
+            }
+
+            String newName;
+
+            do {
+                System.out.print("Введите новое название задачи (текущее название задачи: " +
+                        existingTask.get().getNameTask() + "): ");
+                newName = scanner.nextLine().trim();
+
+                if (newName.isEmpty() || newName.isBlank()) {
+                    System.out.println("Новое название задачи не может быть пустым");
+                }
+            } while (newName.isEmpty());
+
+            //Ввод нового описания
+            System.out.print("Введите новое описание задачи (текущее описание задачи: " +
+                    existingTask.get().getDescription() + "): ");
+            String newDescription = scanner.nextLine().trim();
+
+            if (newDescription.isEmpty()) {
+                newDescription = existingTask.get().getDescription();
+            }
+
+            //Ввод новой даты
+            LocalDate newDate;
+
+            do {
+                System.out.print("Введите новый срок задачи (текущий срок задачи: " +
+                        existingTask.get().getPeriodOfExecution() + "): ");
+                newDate = inputLocalDate();
+
+                if (newDate == null || newDate.isBefore(LocalDate.now())) {
+                    System.out.println("Срок задачи не может быть в прошлом!");
+                }
+            } while (newDate == null || newDate.isBefore(LocalDate.now()));
+
+            if (newDate == null || newDate.isBefore(LocalDate.now())) {
+                System.out.println("Срок задачи не может быть в прошлом!");
+            }
+
+            //Ввод нового статуса
+            System.out.print("Введте новый статус задачи(текущий статус задачи: " +
+                    existingTask.get().getStatus() + "): ");
+            Status newStatus = inputStatus();
+
+
+            //Обновление задачи
+            Task updateTask = taskService.updateTask(
+                    id,
+                    newName,
+                    newDescription,
+                    newDate,
+                    newStatus
+            );
+
+            System.out.println("Задача успешно обновлена!\n" + updateTask);
+
+        } catch (InputMismatchException e) {
+            System.out.println("Неккоретный ввод ID(должно быть число)");
+            scanner.nextLine();
+        } catch (Exception e) {
+            System.out.println("Ошибка при редактировании: " + e.getMessage());
         }
     }
 
@@ -108,8 +193,8 @@ public class TaskController {
         System.out.print("Введите название задачи: ");
         String name = scanner.nextLine();
 
-        if (name.isEmpty()) {
-            System.out.println("Название задачи не может быть пусты");
+        if (name.isEmpty() || name.isBlank()) {
+            System.out.println("Название задачи не может быть пустым");
             return;
         }
 
@@ -119,6 +204,7 @@ public class TaskController {
 
 
         //Ввод даты
+        System.out.print("Введите срок задачи: ");
         LocalDate date = inputLocalDate();
 
         // Ввод статуса
@@ -260,7 +346,9 @@ public class TaskController {
     }
 
     public static void main(String[] args) {
-        TaskController taskController = new TaskController();
-        taskController.run();
+        TaskRepository repository = new TaskRepositoryImpl();
+        TaskService service = new TaskServiceImpl(repository);
+        TaskController controller = new TaskController(service);
+        controller.run();
     }
 }
