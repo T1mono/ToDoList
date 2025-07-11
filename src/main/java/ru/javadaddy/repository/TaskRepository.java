@@ -5,7 +5,6 @@ import ru.javadaddy.model.Task;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface TaskRepository {
     //Создание задачи
@@ -18,7 +17,6 @@ public interface TaskRepository {
     void removeTask(Long id);
 
     //Фильтровать задачи по статусу
-    //TODO: Передать на стрим, когда будет время и доработать проверки списка задач
     List<Task> filterTaskByStatus(Status status);
 
     List<Task> sortByStatus();

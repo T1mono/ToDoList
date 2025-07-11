@@ -3,7 +3,6 @@ package ru.javadaddy.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import ru.javadaddy.enums.Status;

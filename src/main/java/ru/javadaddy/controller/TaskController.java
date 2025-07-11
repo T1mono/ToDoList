@@ -21,9 +21,6 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    private TaskRepository taskRepository;
-
-    private Status status;
 
     // Внедряем TaskService через конструктор
     public TaskController(TaskService taskService) {

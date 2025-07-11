@@ -3,7 +3,6 @@ package ru.javadaddy.service;
 import ru.javadaddy.enums.Status;
 import ru.javadaddy.model.Task;
 import ru.javadaddy.repository.TaskRepository;
-import ru.javadaddy.repository.TaskRepositoryImpl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,6 +55,4 @@ public class TaskServiceImpl implements TaskService {
     ) {
         return taskRepository.updateTask(id, newTaskName, newDescription, newDate, newStatus);
     }
-
-
 }
