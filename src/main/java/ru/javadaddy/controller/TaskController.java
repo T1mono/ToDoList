@@ -53,81 +53,53 @@ public class TaskController {
     }
 
     private void editTask() {
+        System.out.println("Введите ID задачи для изменения: ");
+        Long id = scanner.nextLong();
+        scanner.nextLine();
 
+        Optional<Task> existingTask = taskService.getAllTask().stream()
+                .filter(i -> i.getId().equals(id))
+                .findFirst();
+
+        if (existingTask.isEmpty()) {
+            throw new IllegalArgumentException("Задача с ID " + id + " не найдена!");
+        }
+
+        System.out.println("Введите новое название задачи (текущее: " +
+                existingTask.get().getNameTask() + "): ");
+        String newName = scanner.nextLine().trim();
+        if (newName.isEmpty()) {
+            throw new IllegalArgumentException("Название задачи не может быть пустым");
+        }
+
+        System.out.println("Введите новое описание задачи (текущее: " +
+                existingTask.get().getDescription() + "): ");
+        String newDescription = scanner.nextLine().trim();
+        if (newDescription.isEmpty()) {
+            newDescription = existingTask.get().getDescription();
+        }
+
+        System.out.println("Введите новый срок задачи (текущее: " +
+                existingTask.get().getPeriodOfExecution() + "): ");
+        LocalDate newDate = parseDate(scanner.nextLine());
+        if (newDate == null || newDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Срок задачи не может быть в прошлом");
+        }
+
+        System.out.println("Доступные статусы: " + Arrays.toString(Status.values()));
+        System.out.println("Введите новый статус задачи (текущее: " +
+                existingTask.get().getStatus() + "): ");
+        Status newStatus = Status.valueOf(scanner.nextLine().toUpperCase());
+
+        Task updatedTask = taskService.updateTask(id, newName, newDescription, newDate, newStatus);
+        System.out.println("Задача успешно обновлена!\n" + updatedTask);
+    }
+
+    private LocalDate parseDate(String dateInput) {
         try {
-            //Ввод ID задачи
-            System.out.print("Введите ID задачи, которой хотите изменить: ");
-            Long id = scanner.nextLong();
-
-            Optional<Task> existingTask = taskService.getAllTask().stream()
-                    .filter(i -> i.getId().equals(id))
-                    .findFirst();
-
-            if (existingTask.isEmpty()) {
-                System.out.println("Задача с ID " + id + "не найдена!");
-                return;
-            }
-
-            String newName;
-
-            do {
-                System.out.print("Введите новое название задачи (текущее название задачи: " +
-                        existingTask.get().getNameTask() + "): ");
-                newName = scanner.nextLine().trim();
-
-                if (newName.isEmpty() || newName.isBlank()) {
-                    System.out.println("Новое название задачи не может быть пустым");
-                }
-            } while (newName.isEmpty());
-
-            //Ввод нового описания
-            System.out.print("Введите новое описание задачи (текущее описание задачи: " +
-                    existingTask.get().getDescription() + "): ");
-            String newDescription = scanner.nextLine().trim();
-
-            if (newDescription.isEmpty()) {
-                newDescription = existingTask.get().getDescription();
-            }
-
-            //Ввод новой даты
-            LocalDate newDate;
-
-            do {
-                System.out.print("Введите новый срок задачи (текущий срок задачи: " +
-                        existingTask.get().getPeriodOfExecution() + "): ");
-                newDate = inputLocalDate();
-
-                if (newDate == null || newDate.isBefore(LocalDate.now())) {
-                    System.out.println("Срок задачи не может быть в прошлом!");
-                }
-            } while (newDate == null || newDate.isBefore(LocalDate.now()));
-
-            if (newDate == null || newDate.isBefore(LocalDate.now())) {
-                System.out.println("Срок задачи не может быть в прошлом!");
-            }
-
-            //Ввод нового статуса
-            System.out.print("Введте новый статус задачи(текущий статус задачи: " +
-                    existingTask.get().getStatus() + "): ");
-            Status newStatus = inputStatus();
-
-
-            //Обновление задачи
-            Task updateTask = taskService.updateTask(
-                    id,
-                    newName,
-                    newDescription,
-                    newDate,
-                    newStatus
-            );
-
-            System.out.println("Задача успешно обновлена!\n" + updateTask);
-
-        } catch (InputMismatchException e) {
-            System.out.println("Неккоретный ввод ID(должно быть число)");
-            scanner.nextLine();
+            return LocalDate.parse(dateInput);
         } catch (Exception e) {
-            System.out.println("Ошибка при редактировании: " + e.getMessage());
+            throw new IllegalArgumentException("Неверный формат даты! Пример: 2025-07-07");
         }
     }
 
@@ -155,130 +127,67 @@ public class TaskController {
 
     //TODO: Добавить задачу в TODO List
     private void addTask() {
-
-        //Ввод ID задачи
-        System.out.print("Введите ID задачи: ");
+        System.out.println("Введите ID задачи: ");
         Long id = scanner.nextLong();
         scanner.nextLine();
 
-        //Ввод название задачи
-        System.out.print("Введите название задачи: ");
-        String name = scanner.nextLine();
-
-        if (name.isEmpty() || name.isBlank()) {
-            System.out.println("Название задачи не может быть пустым");
-            return;
+        System.out.println("Введите название задачи: ");
+        String name = scanner.nextLine().trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Название задачи не может быть пустым");
         }
 
-        //Ввод описания задачи
-        System.out.print("Введите описание задачи: ");
-        String description = scanner.nextLine();
+        System.out.println("Введите описание задачи: ");
+        String description = scanner.nextLine().trim();
 
+        System.out.println("Введите срок задачи (ГГГГ-ММ-ДД): ");
+        LocalDate date = parseDate(scanner.nextLine());
+        if (date == null || date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Срок задачи не может быть в прошлом");
+        }
 
-        //Ввод даты
-        System.out.print("Введите срок задачи: ");
-        LocalDate date = inputLocalDate();
-
-        // Ввод статуса
-        Status status = inputStatus();
+        System.out.println("Доступные статусы: " + Arrays.toString(Status.values()));
+        System.out.println("Введите статус задачи: ");
+        Status status = Status.valueOf(scanner.nextLine().toUpperCase());
 
         Task task = new Task(id, name, description, date, status);
-
-        try {
-            taskService.createTask(task);
-            System.out.println("Задача добавлена в список");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-    }
-
-    private Status inputStatus() {
-        while (true) {
-            System.out.println("Доступные статусы:");
-            Arrays.stream(Status.values()).forEach(s -> System.out.println("- " + s));
-            System.out.print("Введите статус: ");
-
-            try {
-                return Status.valueOf(scanner.nextLine().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                System.out.println("Неверный статус! Попробуйте снова");
-            }
-        }
-    }
-
-    private LocalDate inputLocalDate() {
-        LocalDate date;
-        while (true) {
-            System.out.print("Введите дату выполнения (ГГГГ-ММ-ДД): ");
-            String dateInput = scanner.nextLine();
-            try {
-                date = LocalDate.parse(dateInput);
-                break; //Если дата корректная выходим из цикла
-            } catch (DateTimeParseException e) {
-                System.out.println("Неверный формат даты! Пример: 2025-07-07");
-            }
-        }
-        return date;
+        taskService.createTask(task);
+        System.out.println("Задача добавлена в список");
     }
 
     //TODO: Удалить задачу
     private void deleteTask() {
+        System.out.println("Введите ID задачи для удаления: ");
+        Long id = scanner.nextLong();
+        scanner.nextLine();
 
-        try {
-            System.out.print("Введите ID задачи, чтобы удалить: ");
-            Long id = scanner.nextLong();
-
-            scanner.nextLine();
-
-            taskService.deleteTask(id);
-            System.out.println("Задача " + id + " удалена");
-        } catch (InputMismatchException e) {
-            System.out.println("Нужно ввести число!");
-            scanner.nextLine();
-        } catch (Exception e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
+        taskService.deleteTask(id);
+        System.out.println("Задача " + id + " удалена");
     }
 
     //TODO: Отфильтровать задачу
     private void filterTaskByStatus() {
-        //Показываем доступные статусы
-        System.out.println("Доступные статусы: ");
-        Arrays.stream(Status.values())
-                .forEach(status -> System.out.println("- " + status));
+        System.out.println("Доступные статусы: " + Arrays.toString(Status.values()));
+        System.out.println("Введите статус для фильтрации: ");
+        Status filterStatus = Status.valueOf(scanner.nextLine().toUpperCase());
 
-        //Запрашиваем ввод необходимого статуса
-        System.out.println("Введите статус задачи по которому хотите отфильтровать: ");
-        String input = scanner.nextLine().toUpperCase();
-
-        try {
-            //Парсим вводимое значение в Enum
-            Status filterStatus = Status.valueOf(input);
-
-            //Сама фильтрация
-            List<Task> filtered = taskService.findByStatus(filterStatus);
-
-            if (filtered.isEmpty()) {
-                System.out.println("Задачи со статус не найдены");
-            } else {
-                System.out.println("=== Задачи со статусом " + filterStatus + " не найдены ===");
-                filtered.forEach(task -> System.out.printf(
-                        "[ID: %d] %s (до %s)%n",
-                        task.getId(),
-                        task.getNameTask(),
-                        task.getPeriodOfExecution()
-                ));
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Неверный статус! Доступные: " + Arrays.toString(Status.values()));
+        List<Task> filtered = taskService.findByStatus(filterStatus);
+        if (filtered.isEmpty()) {
+            System.out.println("Задачи со статусом не найдены");
+        } else {
+            System.out.println("=== Задачи со статусом " + filterStatus + " ===");
+            filtered.forEach(task -> System.out.printf(
+                    "[ID: %d] %s (до %s)%n",
+                    task.getId(),
+                    task.getNameTask(),
+                    task.getPeriodOfExecution()
+            ));
         }
     }
 
     //TODO: Отсортировать задачи по статусу
     private void sortByStatus() {
-
         List<Task> sortedTasks = taskService.sortByStatus();
-
         if (sortedTasks.isEmpty()) {
             System.out.println("Список задач пуст");
             return;
@@ -313,7 +222,6 @@ public class TaskController {
 
         int input = scanner.nextInt();
         scanner.nextLine();
-
         return input;
     }
 
