@@ -8,17 +8,13 @@ import ru.javadaddy.service.TaskService;
 import ru.javadaddy.service.TaskServiceImpl;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class TaskController {
-
     private final Scanner scanner;
-
     private final TaskService taskService;
 
     // Внедряем TaskService через конструктор
