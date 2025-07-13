@@ -21,60 +21,35 @@ public class TaskController {
 
     private final TaskService taskService;
 
-
     // Внедряем TaskService через конструктор
     public TaskController(TaskService taskService) {
         this.scanner = new Scanner(System.in);
         this.taskService = taskService;
     }
 
-    private List<Task> createTask() {
-        return List.of(
-                new Task(
-                        1L,
-                        "Прочитать статью",
-                        "2 страницы",
-                        LocalDate.now(),
-                        Status.TODO
-                ),
-                new Task(
-                        2L,
-                        "Помыть машину",
-                        "На автомой на Ленина 45",
-                        LocalDate.of(2025, 07, 10),
-                        Status.IN_PROGRESS
-                ),
-                new Task(
-                        3L,
-                        "Забрать заказ на Ozon",
-                        "Ozon который возле работы",
-                        LocalDate.now(),
-                        Status.DONE
-                )
-        );
-    }
-
     public void run() {
-
         boolean running = true;
         while (running) {
-            showCommandToDoList();
-            int choice = readIntInput();
+            try {
+                showCommandToDoList();
+                int choice = readIntInput();
 
-            switch (choice) {
-                case 1 -> addTask();
-                case 2 -> showToDoList();
-                case 3 -> editTask();
-                case 4 -> deleteTask();
-                case 5 -> filterTaskByStatus();
-                case 6 -> sortByStatus();
-                case 0 -> {
-                    System.out.println("Выход из системы...");
-                    running = false;
+                switch (choice) {
+                    case 1 -> addTask();
+                    case 2 -> showToDoList();
+                    case 3 -> editTask();
+                    case 4 -> deleteTask();
+                    case 5 -> filterTaskByStatus();
+                    case 6 -> sortByStatus();
+                    case 0 -> running = false;
+                    default -> System.out.println("Неверная команда, попробуйте снова!");
                 }
-                default -> System.out.println("Неверная команда, попробуйте снова!");
+            } catch (Exception e) {
+                System.out.println("Ошибка: " + e.getMessage());
+                scanner.nextLine();
             }
         }
+        System.out.println("Выход из приложения");
     }
 
     private void editTask() {
